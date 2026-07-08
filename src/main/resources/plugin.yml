@@ -1,4 +1,14 @@
 name: EnchantTuner
 version: '1.0-SNAPSHOT'
 main: io.github.oceanio.enchanttuner.EnchantTuner
-api-version: '1.21'
+api-version: '1.21.11'
+
+commands:
+  ban_enchant:
+    description: Remove banned enchants
+    usage: /ban_enchant <chest|inventory> <on|off>
+    permission: banenchant.use
+permissions:
+  banenchant.use:
+    description: Allows use of remove enchant command
+    default: op
