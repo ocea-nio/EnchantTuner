@@ -1,0 +1,4 @@
+name: EnchantTuner
+version: '1.0-SNAPSHOT'
+main: io.github.oceanio.enchanttuner.EnchantTuner
+api-version: '1.21'
