@@ -5,50 +5,50 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.io.IOException;
+import java.util.logging.Level;
 
 public class YamlManager{
     private final JavaPlugin plugin;
-    private final Map<String,FileConfiguration> yamlData = new HashMap<>();
+    private final String fileName;
+    private final File file;
+    private FileConfiguration config;
 
-    public YamlManager(JavaPlugin plugin) {
+    public YamlManager(JavaPlugin plugin, String fileName){
         this.plugin = plugin;
+        this.fileName = fileName.endsWith(".yml") ? fileName : fileName + ".yml";
+        this.file = new File(plugin.getDataFolder(),this.fileName);
     }
 
-    public FileConfiguration loadYaml(String yamlName){
-        plugin.saveResource(yamlName, false);
-
-        File file = new File(plugin.getDataFolder(), yamlName);
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-        yamlData.put(yamlName, config);
-        return config;
-    }
-
-    public FileConfiguration getYaml(String yamlName){
-        return yamlData.get(yamlName);
-    }
-
-    public FileConfiguration reloadYaml(String yamlName) {
-        File file = new File(plugin.getDataFolder(), yamlName);
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+    public void reload(){
         if (!file.exists()){
-            plugin.saveResource(yamlName, false);
+            file.getParentFile().mkdirs();
+            if (plugin.getResource(fileName) != null){
+                plugin.saveResource(fileName,false);
+            }else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    plugin.getLogger().log(Level.SEVERE, fileName + " の作成に失敗しました。", e);
+                }
+            }
         }
+        config = YamlConfiguration.loadConfiguration(file);
+    }
 
-        yamlData.put(yamlName, config);
+    public FileConfiguration getConfig(){
+        if (config == null){
+            reload();
+        }
         return config;
     }
 
-    public boolean hasYaml(String yamlName) {
-        return yamlData.containsKey(yamlName);
-    }
-
-    public void reloadAll() {
-        for (String yamlName : new HashSet<>(yamlData.keySet())) {
-            reloadYaml(yamlName);
+    public void save() {
+        if (config == null || file == null) return;
+        try {
+            config.save(file);
+        }catch (IOException e){
+            plugin.getLogger().log(Level.SEVERE,fileName +"の保存に失敗しました",e);
         }
     }
 }

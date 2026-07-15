@@ -18,7 +18,6 @@ public class TuningListener implements Listener {
 
     private final JavaPlugin plugin;
     private final TuningService service;
-    private boolean crafting = false;
 
     public TuningListener(JavaPlugin plugin, TuningService service) {
         this.plugin = plugin;
