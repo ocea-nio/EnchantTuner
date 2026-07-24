@@ -5,11 +5,10 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public record TuningInput(ItemStack targetItem, int emeraldCount, int rottenFleshCount) {
+public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
 
     public static TuningInput parse(JavaPlugin plugin, CraftingInventory inv) {
         ItemStack target = null;
-        int emeralds = 0;
         int flesh = 0;
 
         for (ItemStack item : inv.getMatrix()) {
@@ -18,8 +17,6 @@ public record TuningInput(ItemStack targetItem, int emeraldCount, int rottenFles
             if (isEquipment(item)) {
                 if (target != null) return null; // 装備が2つ以上ある場合は無効
                 target = item;
-            } else if (item.getType() == Material.EMERALD) {
-                emeralds += item.getAmount();
             } else if (item.getType() == Material.ROTTEN_FLESH) {
                 flesh += item.getAmount();
             } else {
@@ -27,10 +24,10 @@ public record TuningInput(ItemStack targetItem, int emeraldCount, int rottenFles
             }
         }
 
-        // 装備1つ、エメラルド1つ以上、腐肉1つ以上が必要
-        if (target == null || emeralds == 0 || flesh == 0) return null;
+        // 装備1つ、腐肉1つ以上が必要
+        if (target == null || flesh == 0) return null;
 
-        return new TuningInput(target, emeralds, flesh);
+        return new TuningInput(target, flesh);
     }
 
     private static boolean isEquipment(ItemStack item) {

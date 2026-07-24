@@ -14,17 +14,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 厳選システムのビジネスロジックを担当するクラス。
+ * イベント処理(CraftItemEvent等)は TuningListener 側で行う。
+ */
 public class TuningService {
 
     private final EnchantPool pool = new EnchantPool();
 
     private final NamespacedKey appliedEnchantsKey;
 
+    public static final int MAX_ENCHANTS = 5;
+
+    // 現在のエンチャント数(index) → 次の1個を付与するのに必要な腐肉数
+    private static final int[] FLESH_COST = {1, 2, 5, 10, 20};
+
     public TuningService(JavaPlugin plugin) {
         this.appliedEnchantsKey =
                 new NamespacedKey(plugin, "applied_enchants");
     }
 
+    /**
+     * 対象アイテムに新しいエンチャントを1つロールする。
+     * 既に付与済みの種類は候補から除外される。
+     * 5個上限に達している場合は空のMapを返す。
+     */
     public Map<Enchantment, Integer> rollEnchantment(ItemStack item) {
 
         Map<Enchantment, Integer> result = new HashMap<>();
@@ -37,6 +51,11 @@ public class TuningService {
 
         PersistentDataContainer pdc =
                 meta.getPersistentDataContainer();
+
+        // 5個上限チェック
+        if (countAppliedEnchants(pdc) >= MAX_ENCHANTS) {
+            return result;
+        }
 
         List<EnchantPool.EnchantEntry> candidates =
                 pool.getAllEntries().stream()
@@ -67,6 +86,58 @@ public class TuningService {
         return result;
     }
 
+    /**
+     * 対象アイテムが既に上限までエンチャントされているかどうかを判定する。
+     */
+    public boolean isFull(ItemStack item) {
+
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null) {
+            return false;
+        }
+
+        PersistentDataContainer pdc =
+                meta.getPersistentDataContainer();
+
+        return countAppliedEnchants(pdc) >= MAX_ENCHANTS;
+    }
+
+    /**
+     * 対象アイテムに次の1個を付与するために必要な腐肉の数を返す。
+     * 既に上限(5個)に達している場合は -1 を返す。
+     */
+    public int requiredFleshCount(ItemStack item) {
+
+        if (isFull(item)) {
+            return -1;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        int current = 0;
+
+        if (meta != null) {
+            current = countAppliedEnchants(meta.getPersistentDataContainer());
+        }
+
+        return FLESH_COST[current];
+    }
+
+    private int countAppliedEnchants(PersistentDataContainer pdc) {
+
+        String applied =
+                pdc.get(
+                        appliedEnchantsKey,
+                        PersistentDataType.STRING
+                );
+
+        if (applied == null || applied.isEmpty()) {
+            return 0;
+        }
+
+        return applied.split(",").length;
+    }
+
     private boolean hasBeenApplied(
             PersistentDataContainer pdc,
             Enchantment enchantment
@@ -90,6 +161,10 @@ public class TuningService {
         ).contains(key);
     }
 
+    /**
+     * 付与済みエンチャントとしてPDCに記録する。
+     * item自体のItemMetaを更新して保存する。
+     */
     public void markAsApplied(
             ItemStack item,
             Enchantment enchantment
@@ -129,4 +204,69 @@ public class TuningService {
                 appliedEnchantsKey,
                 PersistentDataType.STRING,
                 current
-        );}}
+        );
+
+        item.setItemMeta(meta);
+    }
+
+    /**
+     * クラフトマトリクス上の素材を消費する。
+     * - 対象装備(ツール等)は1個消費する(=無くなる。新しいアイテムとして返すため)
+     * - 腐肉は requiredFlesh 個ぶんだけ、複数スタックにまたがっていても消費する
+     * 結果スロット(index 0)には触れない。
+     */
+    public void consumeIngredients(CraftingInventory inv, int requiredFlesh) {
+
+        ItemStack[] matrix = inv.getMatrix();
+        int remaining = requiredFlesh;
+
+        for (int i = 0; i < matrix.length; i++) {
+
+            ItemStack item = matrix[i];
+
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+
+            if (item.getType() == Material.ROTTEN_FLESH) {
+
+                if (remaining <= 0) {
+                    continue;
+                }
+
+                int take = Math.min(remaining, item.getAmount());
+                item.setAmount(item.getAmount() - take);
+                remaining -= take;
+
+            } else {
+                // 対象装備は1個消費して無くす
+                int newAmount = item.getAmount() - 1;
+                item.setAmount(Math.max(newAmount, 0));
+            }
+        }
+
+        inv.setMatrix(matrix);
+    }
+
+    /**
+     * クラフトマトリクスの中から「エンチャント対象のツール」を探す。
+     * 腐肉・エメラルド以外のアイテムを対象とみなす。
+     */
+    public ItemStack findTargetTool(CraftingInventory inv) {
+
+        for (ItemStack item : inv.getMatrix()) {
+
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+
+            if (item.getType() == Material.ROTTEN_FLESH) {
+                continue;
+            }
+
+            return item;
+        }
+
+        return null;
+    }
+}
