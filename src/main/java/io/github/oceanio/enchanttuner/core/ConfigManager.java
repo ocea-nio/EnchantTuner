@@ -1,52 +1,25 @@
 package io.github.oceanio.enchanttuner.core;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.*;
 
 public class ConfigManager {
-    private final JavaPlugin plugin;
+    private final YamlManager config;
 
-    private final Set<Enchantment> banned = new HashSet<>();
-    private final Map<String, List<Enchantment>> tuningpools = new HashMap<>();
-
-    public ConfigManager(JavaPlugin plugin) {
-        this.plugin = plugin;
+    public ConfigManager(YamlManager config) {
+        this.config = config;
     }
 
-    public void load() {
-        banned.clear();
-        tuningpools.clear();
-
-        loadBans();
-        loadPools();
-    }
-
-    private void loadBans() {
-        List<String> list = plugin.getConfig().getStringList("ban-enchant");
-
-        for (String name : list) {
-            Enchantment e = Enchantment.getByName(name);
-            if (e != null) banned.add(e);
+    public List<String> getStringList(String path) {
+        if (!config.getConfig().contains(path)) {
+            throw new IllegalArgumentException("存在しない設定です: " + path);
         }
+        return config.getConfig().getStringList(path);
     }
 
-    private void loadPools() {
-        ConfigurationSection sec = plugin.getConfig().getConfigurationSection("pools");
-        if (sec == null) return;
-
-        for (String key : sec.getKeys(false)) {
-            List<String> list = sec.getStringList(key);
-
-            List<Enchantment> enchants = new ArrayList<>();
-            for (String name : list) {
-                Enchantment e = Enchantment.getByName(name);
-                if (e != null) enchants.add(e);
-            }
-
-            tuningpools.put(key, enchants);
+    public int getInt(String path) {
+        if (!config.getConfig().contains(path)) {
+            throw new IllegalArgumentException("存在しない設定です: " + path);
         }
+        return config.getConfig().getInt(path);
     }
 }
