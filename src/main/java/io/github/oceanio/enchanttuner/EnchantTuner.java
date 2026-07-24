@@ -18,7 +18,7 @@ public final class EnchantTuner extends JavaPlugin {
 
         //ここでfeature登録
         featureManager.register(new TuningFeature(new TuningService(this)));
-        featureManager.register(new BanEnchantFeature(new BanEnchantService()));
+
 
         //要素許可
         featureManager.enableAll();

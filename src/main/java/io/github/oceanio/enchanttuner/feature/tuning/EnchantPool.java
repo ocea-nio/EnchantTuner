@@ -58,9 +58,8 @@ public class EnchantPool {
         addEntry(Enchantment.FLAME, 1, 5);        // Flame
         addEntry(Enchantment.INFINITY, 1, 5);    // Infinity
 
-        // ===== 耐久・修復 =====
+        // ===== 耐久=====
         addEntry(Enchantment.UNBREAKING, 3, 5);        // Unbreaking
-        addEntry(Enchantment.MENDING, 1, 5);           // Mending
 
         // ===== 釣り =====
         addEntry(Enchantment.LUCK_OF_THE_SEA, 3, 5);              // Luck of the Sea
@@ -76,10 +75,6 @@ public class EnchantPool {
         addEntry(Enchantment.QUICK_CHARGE, 3, 5);
         addEntry(Enchantment.PIERCING, 4, 5);
         addEntry(Enchantment.MULTISHOT, 1, 5);
-
-        // ===== 呪い系 =====
-        addEntry(Enchantment.BINDING_CURSE, 1, 5);
-        addEntry(Enchantment.VANISHING_CURSE, 1, 5);
 
         // ===== 防具特殊 =====
         addEntry(Enchantment.THORNS, 3, 5);
