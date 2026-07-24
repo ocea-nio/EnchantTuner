@@ -11,6 +11,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -121,6 +122,29 @@ public class TuningService {
         }
 
         return FLESH_COST[current];
+    }
+
+    /**
+     * アイテムのエンチャントを(呪いも含めて)すべて削除し、
+     * このシステムで管理している「付与済み記録」もクリアする。
+     * 砥石使用時のリセット処理などで使う。
+     */
+    public void resetAllEnchants(ItemStack item) {
+
+        for (Enchantment ench : new HashSet<>(item.getEnchantments().keySet())) {
+            item.removeEnchantment(ench);
+        }
+
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null) {
+            return;
+        }
+
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        pdc.remove(appliedEnchantsKey);
+
+        item.setItemMeta(meta);
     }
 
     private int countAppliedEnchants(PersistentDataContainer pdc) {

@@ -58,7 +58,7 @@ public class EnchantPool {
         addEntry(Enchantment.FLAME, 1, 5);        // Flame
         addEntry(Enchantment.INFINITY, 1, 5);    // Infinity
 
-        // ===== 耐久・修復 =====
+        // ===== 耐久=====
         addEntry(Enchantment.UNBREAKING, 3, 5);        // Unbreaking
 
         // ===== 釣り =====
@@ -75,8 +75,6 @@ public class EnchantPool {
         addEntry(Enchantment.QUICK_CHARGE, 3, 5);
         addEntry(Enchantment.PIERCING, 4, 5);
         addEntry(Enchantment.MULTISHOT, 1, 5);
-
-        // ===== 呪い系 =====
 
         // ===== 防具特殊 =====
         addEntry(Enchantment.THORNS, 3, 5);

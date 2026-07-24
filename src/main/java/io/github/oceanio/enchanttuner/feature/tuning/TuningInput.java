@@ -30,6 +30,27 @@ public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
         return new TuningInput(target, flesh);
     }
 
+    /**
+     * このシステムに関係する素材(対象装備 or 腐肉)が
+     * クラフトマトリクスに1つでも含まれているかを判定する。
+     * これがfalseの場合は、通常のクラフトとして一切干渉しない。
+     */
+    public static boolean containsRelevantItems(CraftingInventory inv) {
+
+        for (ItemStack item : inv.getMatrix()) {
+
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+
+            if (isEquipment(item) || item.getType() == Material.ROTTEN_FLESH) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static boolean isEquipment(ItemStack item) {
         String name = item.getType().name();
         return name.endsWith("_HELMET") || name.endsWith("_CHESTPLATE") ||

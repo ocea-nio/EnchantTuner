@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +30,11 @@ public class TuningListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepare(PrepareItemCraftEvent event) {
+
+        // 腐肉・対象装備が絡まない通常のクラフトには一切干渉しない
+        if (!TuningInput.containsRelevantItems(event.getInventory())) {
+            return;
+        }
 
         TuningInput input = TuningInput.parse(plugin, event.getInventory());
 
@@ -63,6 +69,11 @@ public class TuningListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (!(event.getInventory() instanceof CraftingInventory inv)) return;
         if (event.getSlotType() != InventoryType.SlotType.RESULT) return;
+
+        // 腐肉・対象装備が絡まない通常のクラフトには一切干渉しない
+        if (!TuningInput.containsRelevantItems(inv)) {
+            return;
+        }
 
         // 結果スロットへの操作は常にこちらで制御する。
         // 条件を満たさない・既に処理済みの場合も含め、必ずキャンセルして
@@ -143,5 +154,24 @@ public class TuningListener implements Listener {
         if (event.getPlayer() instanceof Player player) {
             player.sendMessage(ChatColor.RED + "エンチャントテーブルは使用できません。");
         }
+    }
+
+    /**
+     * 砥石を使うと、呪いも含めて全てのエンチャントと
+     * このシステムの付与済み記録をリセットする。
+     */
+    @EventHandler
+    public void onPrepareGrindstone(PrepareGrindstoneEvent event) {
+
+        ItemStack result = event.getResult();
+
+        if (result == null || result.getType().isAir()) {
+            return;
+        }
+
+        ItemStack cleared = result.clone();
+        service.resetAllEnchants(cleared);
+
+        event.setResult(cleared);
     }
 }
