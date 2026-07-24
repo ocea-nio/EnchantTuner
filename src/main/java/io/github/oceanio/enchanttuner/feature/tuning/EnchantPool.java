@@ -45,7 +45,7 @@ public class EnchantPool {
         // ===== ツール系 =====
         addEntry(Enchantment.EFFICIENCY, 5, 5);         // Efficiency
         addEntry(Enchantment.SILK_TOUCH, 1, 5);        // Silk Touch
-        addEntry(Enchantment.SILK_TOUCH, 3, 5); // Fortune
+        addEntry(Enchantment.FORTUNE, 3, 5);           // Fortune (修正: 以前はSILK_TOUCHが重複登録されていた)
 
         // ===== 武器系 =====
         addEntry(Enchantment.KNOCKBACK, 2, 5);
@@ -117,9 +117,7 @@ public class EnchantPool {
         return maxLevel;
     }
 
-    // これを追加
     public List<EnchantEntry> getAllEntries() {
         return entries;
     }
 }
-
