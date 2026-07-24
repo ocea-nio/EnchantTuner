@@ -1,6 +1,7 @@
 package io.github.oceanio.enchanttuner;
 
 import io.github.oceanio.enchanttuner.core.FeatureManager;
+import io.github.oceanio.enchanttuner.core.YamlManager;
 import io.github.oceanio.enchanttuner.feature.banenchant.BanEnchantFeature;
 import io.github.oceanio.enchanttuner.feature.banenchant.BanEnchantService;
 import io.github.oceanio.enchanttuner.feature.tuning.TuningFeature;
@@ -17,7 +18,7 @@ public final class EnchantTuner extends JavaPlugin {
 
         //ここでfeature登録
         featureManager.register(new TuningFeature(new TuningService()));
-        featureManager.register(new BanEnchantFeature(new BanEnchantService()));
+        featureManager.register(new BanEnchantFeature(new BanEnchantService(new YamlManager(this,"config"))));
 
         //要素許可
         featureManager.enableAll();
