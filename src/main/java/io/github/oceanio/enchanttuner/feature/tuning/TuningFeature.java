@@ -5,12 +5,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TuningFeature implements Feature {
-    private final TuningService service;
+    private  TuningService service;
     private TuningListener listener;
 
-    public TuningFeature(TuningService service) {
-        this.service = service;
-    }
+
 
     @Override
     public String getName() {
@@ -19,9 +17,12 @@ public class TuningFeature implements Feature {
 
     @Override
     public void enable(JavaPlugin plugin) {
-        // 引数なしのコンストラクタを呼び出す
+        //service
+        this.service = new TuningService(plugin);
 
         this.listener = new TuningListener(plugin, service);
+
+        //register
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
     }
 

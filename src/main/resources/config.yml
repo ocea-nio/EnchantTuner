@@ -1,6 +1,6 @@
 ban-enchant:
   - minecraft:mending
   - minecraft:binding_curse
-  - minecraft:
+  - minecraft:vanishing_curse
 Tuning-Pools:
   -

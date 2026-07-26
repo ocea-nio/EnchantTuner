@@ -1,16 +1,15 @@
 package io.github.oceanio.enchanttuner.feature.banenchant;
 
 import io.github.oceanio.enchanttuner.core.Feature;
+import io.github.oceanio.enchanttuner.core.YamlManager;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BanEnchantFeature implements Feature {
-    private final BanEnchantService service;
+    private  BanEnchantService service;
     private BanEnchantListener listener;
     private BanEnchantCommand command;
-
-    public BanEnchantFeature(BanEnchantService service ){
-        this.service = service;
-    }
+    private YamlManager config;
 
     @Override
     public String getName(){
@@ -19,7 +18,14 @@ public class BanEnchantFeature implements Feature {
 
     @Override
     public void enable(JavaPlugin plugin){
-        //DI
+        //config
+        this.config = new YamlManager(plugin, "config");
+
+        //service
+        this.service = new BanEnchantService();
+        this.service.load(config);
+
+        //listener
         this.listener = new BanEnchantListener(service);
         this.command = new BanEnchantCommand(service);
 
@@ -27,7 +33,10 @@ public class BanEnchantFeature implements Feature {
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
 
         // コマンド登録
-        plugin.getCommand("ban_enchant").setExecutor(command);
+        PluginCommand pluginCommand = plugin.getCommand("ban_enchant");
+        if (pluginCommand != null) {
+            pluginCommand.setExecutor(command);
+        }
 
     }
 

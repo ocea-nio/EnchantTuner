@@ -17,9 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BanEnchantService {
-    private final Set<Enchantment> banEnchantments;
+    private  Set<Enchantment> banEnchantments;
 
-    public BanEnchantService(YamlManager config) {
+    public void load(YamlManager config) {
         this.banEnchantments = config.getConfig()
                 .getStringList("ban-enchant")
                 .stream()
