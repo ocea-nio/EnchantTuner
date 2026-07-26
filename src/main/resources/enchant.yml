@@ -1,0 +1,389 @@
+enchants:
+  #ツール類
+  efficiency:
+    type: vanilla
+    key: minecraft:efficiency
+    enable: true
+    max-level: 5
+    target:
+      - pickaxe
+      - shovel
+      - axe
+      - hoe
+      - shears
+  fortune:
+    type: vanilla
+    key: minecraft:fortune
+    enable: true
+    max-level: 3
+    target:
+      - pickaxe
+      - shovel
+      - axe
+      - hoe
+    conflicts:
+      - minecraft:silk_touch
+  silk_touch:
+    type: vanilla
+    key: minecraft:silk_touch
+    enable: true
+    max-level: 1
+    target:
+      - pickaxe
+      - shovel
+      - axe
+      - hoe
+    conflicts:
+      - minecraft:fortune
+  lure:
+    type: vanilla
+    key: minecraft:lure
+    enable: true
+    max-level: 3
+    target:
+      - fishing_rod
+  luck_of_the_sea:
+    type: vanilla
+    key: minecraft:luck_of_the_sea
+    enable: true
+    max-level: 3
+    target:
+      - fishing_rod
+
+  #火力関連
+  sharpness:
+    type: vanilla
+    key: minecraft:sharpness
+    enable: true
+    max-level: 5
+    target:
+      - sword
+      - axe
+      - spear
+    conflicts:
+      - minecraft:smite
+      - minecraft:bane_of_arthropods
+  smite:
+    type: vanilla
+    key: minecraft:smite
+    enable: true
+    max-level: 5
+    target:
+      - sword
+      - axe
+    conflicts:
+      - minecraft:sharpness
+      - minecraft:bane_of_arthropods
+  bane_of_arthropods:
+    type: vanilla
+    key: minecraft:bane_of_arthropods
+    enable: true
+    max-level: 5
+    target:
+      - sword
+      - axe
+    conflicts:
+      - minecraft:sharpness
+      - minecraft:smite
+  fire_aspect:
+    type: vanilla
+    key: minecraft:fire_aspect
+    enable: true
+    max-level: 2
+    target:
+      - sword
+      - spear
+  sweeping_edge:
+    type: vanilla
+    key: minecraft:sweeping_edge
+    enable: true
+    max-level: 3
+    target:
+      - sword
+  knockback:
+    type: vanilla
+    key: minecraft:knockback
+    enable: true
+    max-level: 2
+    target:
+      - sword
+  power:
+    type: vanilla
+    key: minecraft:power
+    enable: true
+    max-level: 5
+    target:
+      - bow
+  impaling:
+    type: vanilla
+    key: minecraft:impaling
+    enable: true
+    max-level: 5
+    target:
+      - trident
+  flame:
+    type: vanilla
+    key: minecraft:flame
+    enable: true
+    max-level: 1
+    target:
+      - bow
+  infinity:
+    type: vanilla
+    key: minecraft:infinity
+    enable: true
+    max-level: 1
+    target:
+      - bow
+  punch:
+    type: vanilla
+    key: minecraft:punch
+    enable: true
+    max-level: 2
+    target:
+      - bow
+  loyalty:
+    type: vanilla
+    key: minecraft:loyalty
+    enable: true
+    max-level: 3
+    target:
+      - trident
+    conflicts:
+      - minecraft:riptide
+  channeling:
+    type: vanilla
+    key: minecraft:channeling
+    enable: true
+    max-level: 1
+    target:
+      - trident
+    conflicts:
+      - minecraft:riptide
+  piercing:
+    type: vanilla
+    key: minecraft:piercing
+    enable: true
+    max-level: 4
+    target:
+      - crossbow
+    conflicts:
+      - minecraft:multishot
+  multishot:
+    type: vanilla
+    key: minecraft:multishot
+    enable: true
+    max-level: 1
+    target:
+      - crossbow
+    conflicts:
+      - minecraft:piercing
+  quick_charge:
+    type: vanilla
+    key: minecraft:quick_charge
+    enable: true
+    max-level: 3
+    target:
+      - crossbow
+  breach:
+    type: vanilla
+    key: minecraft:breach
+    enable: true
+    max-level: 4
+    target:
+      - mace
+    conflicts:
+      - minecraft:density
+  density:
+    type: vanilla
+    key: minecraft:density
+    enable: true
+    max-level: 5
+    target:
+      - mace
+    conflicts:
+      - minecraft:breach
+
+  #移動系
+  depth_strider:
+    type: vanilla
+    key: minecraft:depth_strider
+    enable: true
+    max-level: 3
+    target:
+      - boots
+    conflicts:
+      - minecraft:frost_walker
+  swift_sneak:
+    type: vanilla
+    key: minecraft:swift_sneak
+    enable: true
+    max-level: 3
+    target:
+      - leggings
+  frost_walker:
+    type: vanilla
+    key: minecraft:frost_walker
+    enable: true
+    max-level: 2
+    target:
+      - boots
+    conflicts:
+      - minecraft:depth_strider
+  soul_speed:
+    type: vanilla
+    key: minecraft:soul_speed
+    enable: true
+    max-level: 3
+    target:
+      - boots
+  lunge:
+    type: vanilla
+    key: minecraft:lunge
+    enable: true
+    max-level: 3
+    target:
+      - spear
+  riptide:
+    type: vanilla
+    key: minecraft:riptide
+    enable: true
+    max-level: 3
+    target:
+      - trident
+    conflicts:
+      - minecraft:channeling
+      - minecraft:loyalty
+  wind_burst:
+    type: vanilla
+    key: minecraft:wind_burst
+    enable: true
+    max-level: 3
+    target:
+      - mace
+
+  #耐性
+  protection:
+    type: vanilla
+    key: minecraft:protection
+    enable: true
+    max-level: 4
+    target:
+      - helmet
+      - chestplate
+      - leggings
+      - boots
+    conflicts:
+      - minecraft:fire_protection
+      - minecraft:projectile_protection
+      - minecraft:blast_protection
+  fire_protection:
+    type: vanilla
+    key: minecraft:fire_protection
+    enable: true
+    max-level: 4
+    target:
+      - helmet
+      - chestplate
+      - leggings
+      - boots
+    conflicts:
+      - minecraft:protection
+      - minecraft:projectile_protection
+      - minecraft:blast_protection
+  blast_protection:
+    type: vanilla
+    key: minecraft:blast_protection
+    enable: true
+    max-level: 4
+    target:
+      - helmet
+      - chestplate
+      - leggings
+      - boots
+    conflicts:
+      - minecraft:fire_protection
+      - minecraft:projectile_protection
+      - minecraft:protection
+  projectile_protection:
+    type: vanilla
+    key: minecraft:projectile_protection
+    enable: true
+    max-level: 4
+    target:
+      - helmet
+      - chestplate
+      - leggings
+      - boots
+    conflicts:
+      - minecraft:fire_protection
+      - minecraft:protection
+      - minecraft:blast_protection
+  thorns:
+    type: vanilla
+    key: minecraft:thorns
+    enable: true
+    max-level: 3
+    target:
+      - helmet
+      - chestplate
+      - leggings
+      - boots
+  feather_falling:
+    type: vanilla
+    key: minecraft:feather_falling
+    enable: true
+    max-level: 4
+    target:
+      - boots
+  respiration:
+    type: vanilla
+    key: minecraft:respiration
+    enable: true
+    max-level: 3
+    target:
+      - helmet
+  aqua_affinity:
+    type: vanilla
+    key: minecraft:aqua_affinity
+    enable: true
+    max-level: 1
+    target:
+      - helmet
+
+
+  #その他
+  looting:
+    type: vanilla
+    key: minecraft:looting
+    enable: true
+    max-level: 3
+    target:
+      - sword
+      - spear
+  unbreaking:
+    type: vanilla
+    key: minecraft:unbreaking
+    enable: true
+    max-level: 5
+    target:
+      - sword
+      - spear
+      - helmet
+      - chestplate
+      - leggings
+      - boots
+      - pickaxe
+      - axe
+      - shovel
+      - hoe
+      - fishing_rod
+      - bow
+      - crossbow
+      - shield
+      - mace
+      - trident
+      - shears
+
+
+

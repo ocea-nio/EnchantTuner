@@ -19,7 +19,7 @@ public class BanEnchantFeature implements Feature {
     @Override
     public void enable(JavaPlugin plugin){
         //config
-        this.config = new YamlManager(plugin, "config");
+        this.config = new YamlManager(plugin, "ban-enchant");
 
         //service
         this.service = new BanEnchantService();

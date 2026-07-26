@@ -1,0 +1,109 @@
+enchant-pool:
+  entries:
+    #tools
+    efficiency:
+      weight: 10
+    fortune:
+      weight: 5
+    silk_touch:
+      weight: 5
+    lure:
+      weight: 10
+    luck_of_the_sea:
+      weight: 5
+
+    #sword
+    sharpness:
+      weight: 5
+    smite:
+      weight: 5
+    bane_of_arthropods:
+      weight: 5
+    fire_aspect:
+      weight: 3
+    sweeping_edge:
+      weight: 1
+    knockback:
+      weight: 2
+    looting:
+      weight: 3
+
+    #bow
+    power:
+      weight: 10
+    flame:
+      weight: 2
+    punch:
+      weight: 2
+    infinity:
+      weight: 1
+
+    #crossbow
+    piercing:
+      weight: 5
+    multishot:
+      weight: 5
+    quick_charge:
+      weight: 3
+
+    #trident
+    loyalty:
+      weight: 1
+    impaling:
+      weight: 5
+    channeling:
+      weight: 2
+    riptide:
+      weight: 1
+
+    #spear
+    lunge:
+      weight: 10
+
+    #mace
+    density:
+      weight: 7
+    breach:
+      weight: 3
+    wind_burst:
+      weight: 1
+
+    #armor
+    protection:
+      weight: 5
+    fire_protection:
+      weight: 10
+    projectile_protection:
+      weight: 10
+    blast_protection:
+      weight: 10
+    thorns:
+      weight: 15
+
+    #leggings
+    swift_sneak:
+      weight: 3
+
+    #helmet
+    respiration:
+      weight: 3
+    aqua_affinity:
+      weight: 3
+
+    #boots:
+    feather_falling:
+      weight: 5
+    frost_walker:
+      weight: 7
+    depth_strider:
+      weight: 5
+    soul_speed:
+      weight: 1
+
+    #all
+    unbreaking:
+      weight: 6
+
+
+
+
