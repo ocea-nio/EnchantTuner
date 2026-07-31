@@ -1,5 +1,6 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
@@ -8,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
 
     public static TuningInput parse(JavaPlugin plugin, CraftingInventory inv) {
+
         ItemStack target = null;
         int flesh = 0;
 
@@ -20,6 +22,7 @@ public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
             } else if (item.getType() == Material.ROTTEN_FLESH) {
                 flesh += item.getAmount();
             } else {
+                Bukkit.getLogger().info("parse all false");
                 return null; // 関係ないアイテムが混ざっている
             }
         }

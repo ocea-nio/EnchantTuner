@@ -1,7 +1,9 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
@@ -10,10 +12,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 厳選システムのビジネスロジックを担当するクラス。
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class TuningService {
 
-    private final EnchantPool pool = new EnchantPool();
+    private final EnchantPool pool;
 
     private final NamespacedKey appliedEnchantsKey;
 
@@ -30,9 +30,9 @@ public class TuningService {
     // 現在のエンチャント数(index) → 次の1個を付与するのに必要な腐肉数
     private static final int[] FLESH_COST = {1, 2, 5, 10, 20};
 
-    public TuningService(JavaPlugin plugin) {
-        this.appliedEnchantsKey =
-                new NamespacedKey(plugin, "applied_enchants");
+    public TuningService(EnchantPool pool, JavaPlugin plugin) {
+        this.pool = pool;
+        this.appliedEnchantsKey = new NamespacedKey(plugin, "applied_enchants");
     }
 
     /**
@@ -41,6 +41,8 @@ public class TuningService {
      * 5個上限に達している場合は空のMapを返す。
      */
     public Map<Enchantment, Integer> rollEnchantment(ItemStack item) {
+
+        Bukkit.getLogger().info("rollEnchant fire");
 
         Map<Enchantment, Integer> result = new HashMap<>();
 
@@ -58,34 +60,60 @@ public class TuningService {
             return result;
         }
 
-        List<EnchantPool.EnchantEntry> candidates =
-                pool.getAllEntries().stream()
-                        .filter(e -> e.getEnchantment().canEnchantItem(item))
-                        .filter(e -> !hasBeenApplied(
-                                pdc,
-                                e.getEnchantment()
-                        ))
+        List<EnchantDefinition> candidates =
+                pool.getEntries().stream().map(entry -> {
+                            Bukkit.getLogger().info("entry: " + entry.getEnchantId());
+                            return pool.getDefinition(entry.getEnchantId());
+                        })
+                        .filter(Objects::nonNull)
+                        .filter(EnchantDefinition::isEnabled)
+                        .filter(def -> def.getTargets().stream().anyMatch(target -> TargetMatcher.canEnchant(target,item)))
+                        .filter(def -> !hasBeenApplied(pdc, def.getKey()))
                         .toList();
+
+        Bukkit.getLogger().info("candidate size = " + candidates.size());
 
         if (candidates.isEmpty()) {
             return result;
         }
 
-        EnchantPool.EnchantEntry entry =
+        EnchantDefinition definition =
                 candidates.get(
                         (int) (Math.random() * candidates.size())
                 );
 
         int level =
-                pool.rollLevel(entry.getMaxLevel());
+                rollLevel(definition.getMaxLevel());
+
+        Enchantment enchant = Registry.ENCHANTMENT.get(definition.getKey());
+        Bukkit.getLogger().info(String.valueOf(definition.getKey()));
+
+        if (enchant == null) {
+            return result;
+        }
 
         result.put(
-                entry.getEnchantment(),
+                enchant,
                 level
         );
 
         return result;
     }
+
+    /**
+     * 対象のエンチャントのレベルを決定
+     */
+    public int rollLevel(int maxLevel) {
+        int roll = ThreadLocalRandom.current().nextInt(100);
+
+        if (roll < 50) return 1;
+        if (roll < 80) return Math.min(2, maxLevel);
+        if (roll < 95) return Math.min(3, maxLevel);
+        if (roll < 99) return Math.min(4, maxLevel);
+        return maxLevel;
+    }
+
+
 
     /**
      * 対象アイテムが既に上限までエンチャントされているかどうかを判定する。
@@ -162,14 +190,7 @@ public class TuningService {
         return applied.split(",").length;
     }
 
-    private boolean hasBeenApplied(
-            PersistentDataContainer pdc,
-            Enchantment enchantment
-    ) {
-
-        String key =
-                enchantment.getKey().toString();
-
+    private boolean hasBeenApplied(PersistentDataContainer pdc, NamespacedKey key) {
         String applied =
                 pdc.get(
                         appliedEnchantsKey,
@@ -180,9 +201,8 @@ public class TuningService {
             return false;
         }
 
-        return List.of(
-                applied.split(",")
-        ).contains(key);
+        return List.of(applied.split(","))
+                .contains(key.toString());
     }
 
     /**
