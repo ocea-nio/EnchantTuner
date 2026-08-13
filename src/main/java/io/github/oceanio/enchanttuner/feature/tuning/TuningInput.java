@@ -1,58 +1,53 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
+
 
 public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
 
-    public static TuningInput parse(JavaPlugin plugin, CraftingInventory inv) {
+    public static TuningInput parse(Inventory inv,int target_slot,int cost_slot) {
+        ItemStack target = inv.getItem(target_slot);
+        ItemStack cost = inv.getItem(cost_slot);
+        ItemStack[] slot = {target,cost};
 
-        ItemStack target = null;
-        int flesh = 0;
-
-        for (ItemStack item : inv.getMatrix()) {
-            if (item == null || item.getType() == Material.AIR) continue;
-
-            if (isEquipment(item)) {
-                if (target != null) return null; // 装備が2つ以上ある場合は無効
-                target = item;
-            } else if (item.getType() == Material.ROTTEN_FLESH) {
-                flesh += item.getAmount();
-            } else {
-                Bukkit.getLogger().info("parse all false");
-                return null; // 関係ないアイテムが混ざっている
-            }
+        for (ItemStack item : slot){
+            if (item == null || item.getType() == Material.AIR) return null;
         }
 
         // 装備1つ、腐肉1つ以上が必要
-        if (target == null || flesh == 0) return null;
+        if(!(isEquipment(target)))return null;
+        if (!(cost.getType() == Material.ROTTEN_FLESH)) return null;
+
+        int flesh = cost.getAmount();
+
 
         return new TuningInput(target, flesh);
     }
 
     /**
-     * このシステムに関係する素材(対象装備 or 腐肉)が
-     * クラフトマトリクスに1つでも含まれているかを判定する。
-     * これがfalseの場合は、通常のクラフトとして一切干渉しない。
+     *GUI追加後の修正候補
      */
-    public static boolean containsRelevantItems(CraftingInventory inv) {
-
-        for (ItemStack item : inv.getMatrix()) {
-
+    public static boolean containsRelevantItems(Inventory inv,int target,int cost) {
+        ItemStack[] slot = {inv.getItem(target), inv.getItem(cost)};
+        Bukkit.getLogger().info("target = " + inv.getItem(target));
+        Bukkit.getLogger().info("cost   = " + inv.getItem(cost));
+        for (ItemStack item : slot){
             if (item == null || item.getType() == Material.AIR) {
                 continue;
             }
-
             if (isEquipment(item) || item.getType() == Material.ROTTEN_FLESH) {
                 return true;
             }
         }
-
-        return false;
+            return false;
     }
+
+
+
 
     private static boolean isEquipment(ItemStack item) {
         String name = item.getType().name();

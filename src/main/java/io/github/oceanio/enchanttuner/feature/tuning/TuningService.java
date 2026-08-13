@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -59,19 +60,17 @@ public class TuningService {
         if (countAppliedEnchants(pdc) >= MAX_ENCHANTS) {
             return result;
         }
-
+        //lambda
         List<EnchantDefinition> candidates =
-                pool.getEntries().stream().map(entry -> {
-                            Bukkit.getLogger().info("entry: " + entry.getEnchantId());
-                            return pool.getDefinition(entry.getEnchantId());
-                        })
+                pool.getEntries().stream().map(entry -> {return pool.getDefinition(entry.getEnchantId());})
                         .filter(Objects::nonNull)
                         .filter(EnchantDefinition::isEnabled)
                         .filter(def -> def.getTargets().stream().anyMatch(target -> TargetMatcher.canEnchant(target,item)))
+                        .filter(def -> !ConflictChecker.canEnchant(def.getConflicts(),pdc,def.getKey()))
                         .filter(def -> !hasBeenApplied(pdc, def.getKey()))
                         .toList();
 
-        Bukkit.getLogger().info("candidate size = " + candidates.size());
+
 
         if (candidates.isEmpty()) {
             return result;
@@ -175,6 +174,10 @@ public class TuningService {
         item.setItemMeta(meta);
     }
 
+    /**
+     * itemの持っているエンチャントをsplitで
+     * 配列に変えてlengthで数えてるためreturn int
+     */
     private int countAppliedEnchants(PersistentDataContainer pdc) {
 
         String applied =
@@ -186,10 +189,11 @@ public class TuningService {
         if (applied == null || applied.isEmpty()) {
             return 0;
         }
-
+        Bukkit.getLogger().info("PDC with Applied: [" + applied + "]");
         return applied.split(",").length;
     }
 
+    // return boolean
     private boolean hasBeenApplied(PersistentDataContainer pdc, NamespacedKey key) {
         String applied =
                 pdc.get(
@@ -259,37 +263,18 @@ public class TuningService {
      * - 腐肉は requiredFlesh 個ぶんだけ、複数スタックにまたがっていても消費する
      * 結果スロット(index 0)には触れない。
      */
-    public void consumeIngredients(CraftingInventory inv, int requiredFlesh) {
-
-        ItemStack[] matrix = inv.getMatrix();
+    public void consumeIngredients(Inventory inv, int requiredFlesh,int cost_slot) {
         int remaining = requiredFlesh;
+        ItemStack cost = inv.getItem(cost_slot);
 
-        for (int i = 0; i < matrix.length; i++) {
-
-            ItemStack item = matrix[i];
-
-            if (item == null || item.getType() == Material.AIR) {
-                continue;
+        if (cost.getType() == Material.ROTTEN_FLESH) {
+            if (remaining <= 0) {
+                return;
             }
 
-            if (item.getType() == Material.ROTTEN_FLESH) {
-
-                if (remaining <= 0) {
-                    continue;
-                }
-
-                int take = Math.min(remaining, item.getAmount());
-                item.setAmount(item.getAmount() - take);
-                remaining -= take;
-
-            } else {
-                // 対象装備は1個消費して無くす
-                int newAmount = item.getAmount() - 1;
-                item.setAmount(Math.max(newAmount, 0));
-            }
-        }
-
-        inv.setMatrix(matrix);
+            int take = Math.min(remaining, cost.getAmount());
+            cost.setAmount(cost.getAmount() - take);
+        }else return;
     }
 
     /**

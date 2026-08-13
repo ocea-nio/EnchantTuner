@@ -21,6 +21,8 @@ public class TuningFeature implements Feature {
 
     @Override
     public void enable(JavaPlugin plugin) {
+        //pdc
+        TuningKeys.init(plugin);
         //yaml
         this.enchantPool = new YamlManager(plugin, "EnchantPool");
         this.enchants = new YamlManager(plugin, "enchants");
