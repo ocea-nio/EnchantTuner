@@ -1,4 +1,15 @@
 enchants:
+  delicate:
+    type: custom
+    key: enchanttuner:delicate
+    enable: true
+    max-level: 1
+    target:
+      - pickaxe
+      - shovel
+      - axe
+      - hoe
+
   #ツール類
   efficiency:
     type: vanilla
@@ -384,6 +395,5 @@ enchants:
       - mace
       - trident
       - shears
-
 
 
