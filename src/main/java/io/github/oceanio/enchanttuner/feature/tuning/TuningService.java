@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -49,8 +48,6 @@ public class TuningService {
      * 5個上限に達している場合は空のMapを返す。
      */
     public Map<EnchantDefinition, Integer> rollEnchantment(ItemStack item) {
-
-        Bukkit.getLogger().info("rollEnchant fire");
 
         Map<EnchantDefinition, Integer> result = new HashMap<>();
 
@@ -196,7 +193,6 @@ public class TuningService {
         if (applied == null || applied.isEmpty()) {
             return 0;
         }
-        Bukkit.getLogger().info("PDC with Applied: [" + applied + "]");
         return applied.split(",").length;
     }
 
@@ -281,6 +277,6 @@ public class TuningService {
 
             int take = Math.min(remaining, cost.getAmount());
             cost.setAmount(cost.getAmount() - take);
-        }else return;
+        }
     }
 }
