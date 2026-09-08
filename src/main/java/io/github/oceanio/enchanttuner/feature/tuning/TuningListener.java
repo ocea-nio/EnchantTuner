@@ -2,7 +2,9 @@ package io.github.oceanio.enchanttuner.feature.tuning;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -90,16 +92,33 @@ public class TuningListener implements Listener {
                 }
 
                 ItemStack result = input.targetItem();
-                var enchants = service.rollEnchantment(result);
+                Map<EnchantDefinition,Integer> enchants = service.rollEnchantment(result);
 
                 if (enchants.isEmpty()) {
                     // これ以上付与できる候補が無い(プール枯渇 or 全て付与済み)
                     player.sendMessage(ChatColor.RED + "これ以上付与できるエンチャントがありません！");
                     return; // 素材は消費しない
                 }
-                enchants.forEach(result::addUnsafeEnchantment);
-                enchants.keySet().forEach(ench -> service.markAsApplied(result, ench));
 
+
+                enchants.forEach((definition, level) -> {
+                    if (definition.getType() == EnchantDefinition.EnchantType.VANILLA) {
+
+                        Enchantment enchant =
+                                Registry.ENCHANTMENT.get(definition.getKey());
+
+                        if (enchant != null) {
+                            //これが付与
+                            result.addUnsafeEnchantment(enchant, level);
+                        }
+
+                    } else if (definition.getType() == EnchantDefinition.EnchantType.CUSTOM) {
+                        // Custom enchantmentの付与処理
+
+                    }
+
+                    service.markAsApplied(result, definition);
+                });
                 service.consumeIngredients(inv, required,COST_SLOT);
 
                 //音を鳴らす

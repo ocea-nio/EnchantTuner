@@ -3,7 +3,6 @@ package io.github.oceanio.enchanttuner.feature.tuning;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
@@ -41,11 +40,11 @@ public class TuningService {
      * 既に付与済みの種類は候補から除外される。
      * 5個上限に達している場合は空のMapを返す。
      */
-    public Map<Enchantment, Integer> rollEnchantment(ItemStack item) {
+    public Map<EnchantDefinition, Integer> rollEnchantment(ItemStack item) {
 
         Bukkit.getLogger().info("rollEnchant fire");
 
-        Map<Enchantment, Integer> result = new HashMap<>();
+        Map<EnchantDefinition, Integer> result = new HashMap<>();
 
         ItemMeta meta = item.getItemMeta();
 
@@ -84,15 +83,8 @@ public class TuningService {
         int level =
                 rollLevel(definition.getMaxLevel());
 
-        Enchantment enchant = Registry.ENCHANTMENT.get(definition.getKey());
-        Bukkit.getLogger().info(String.valueOf(definition.getKey()));
-
-        if (enchant == null) {
-            return result;
-        }
-
         result.put(
-                enchant,
+                definition,
                 level
         );
 
@@ -215,7 +207,7 @@ public class TuningService {
      */
     public void markAsApplied(
             ItemStack item,
-            Enchantment enchantment
+            EnchantDefinition enchantment
     ) {
 
         ItemMeta meta =
