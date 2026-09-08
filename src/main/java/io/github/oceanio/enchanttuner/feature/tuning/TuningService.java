@@ -159,7 +159,7 @@ public class TuningService {
      * 砥石使用時のリセット処理などで使う。
      */
     public void resetAllEnchants(ItemStack item) {
-
+        // Vanilla
         for (Enchantment ench : new HashSet<>(item.getEnchantments().keySet())) {
             item.removeEnchantment(ench);
         }
@@ -171,6 +171,11 @@ public class TuningService {
         }
 
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        //Custom
+        for (NamespacedKey key : customEnchants.keySet()) {
+            pdc.remove(key);
+        }
+        // 厳選システム側の記録
         pdc.remove(appliedEnchantsKey);
 
         item.setItemMeta(meta);
@@ -277,27 +282,5 @@ public class TuningService {
             int take = Math.min(remaining, cost.getAmount());
             cost.setAmount(cost.getAmount() - take);
         }else return;
-    }
-
-    /**
-     * クラフトマトリクスの中から「エンチャント対象のツール」を探す。
-     * 腐肉・エメラルド以外のアイテムを対象とみなす。
-     */
-    public ItemStack findTargetTool(CraftingInventory inv) {
-
-        for (ItemStack item : inv.getMatrix()) {
-
-            if (item == null || item.getType() == Material.AIR) {
-                continue;
-            }
-
-            if (item.getType() == Material.ROTTEN_FLESH) {
-                continue;
-            }
-
-            return item;
-        }
-
-        return null;
     }
 }

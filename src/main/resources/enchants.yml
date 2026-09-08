@@ -1,14 +1,5 @@
 enchants:
-  delicate:
-    type: custom
-    key: enchanttuner:delicate
-    enable: true
-    max-level: 1
-    target:
-      - pickaxe
-      - shovel
-      - axe
-      - hoe
+
 
   #ツール類
   efficiency:
@@ -22,6 +13,13 @@ enchants:
       - axe
       - hoe
       - shears
+  delicate:
+    type: custom
+    key: enchanttuner:delicate
+    enable: true
+    max-level: 1
+    target:
+      - hoe
   fortune:
     type: vanilla
     key: minecraft:fortune
