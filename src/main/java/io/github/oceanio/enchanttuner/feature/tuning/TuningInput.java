@@ -33,8 +33,6 @@ public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
      */
     public static boolean containsRelevantItems(Inventory inv,int target,int cost) {
         ItemStack[] slot = {inv.getItem(target), inv.getItem(cost)};
-        Bukkit.getLogger().info("target = " + inv.getItem(target));
-        Bukkit.getLogger().info("cost   = " + inv.getItem(cost));
         for (ItemStack item : slot){
             if (item == null || item.getType() == Material.AIR) {
                 continue;
@@ -55,7 +53,10 @@ public record TuningInput(ItemStack targetItem, int rottenFleshCount) {
                 name.endsWith("_LEGGINGS") || name.endsWith("_BOOTS") ||
                 name.endsWith("_SWORD") || name.endsWith("_AXE") ||
                 name.endsWith("_PICKAXE") || name.endsWith("_SHOVEL") ||
-                name.endsWith("_HOE") || item.getType() == Material.TRIDENT ||
-                item.getType() == Material.BOW || item.getType() == Material.CROSSBOW;
+                name.endsWith("_HOE") || name.endsWith("_SPEAR") ||
+                item.getType() == Material.TRIDENT ||
+                item.getType() == Material.BOW || item.getType() == Material.CROSSBOW ||
+                item.getType() == Material.MACE || item.getType() == Material.SHEARS ||
+                item.getType() == Material.FISHING_ROD;
     }
 }

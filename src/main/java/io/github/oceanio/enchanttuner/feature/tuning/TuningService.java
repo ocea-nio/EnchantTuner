@@ -66,7 +66,7 @@ public class TuningService {
                         .filter(Objects::nonNull)
                         .filter(EnchantDefinition::isEnabled)
                         .filter(def -> def.getTargets().stream().anyMatch(target -> TargetMatcher.canEnchant(target,item)))
-                        .filter(def -> !ConflictChecker.canEnchant(def.getConflicts(),pdc,def.getKey()))
+                        .filter(def -> ConflictChecker.canEnchant(def.getConflicts(),pdc,appliedEnchantsKey))
                         .filter(def -> !hasBeenApplied(pdc, def.getKey()))
                         .toList();
 

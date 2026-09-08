@@ -2,7 +2,6 @@ package io.github.oceanio.enchanttuner.feature.tuning;
 
 
 import io.github.oceanio.enchanttuner.core.YamlManager;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -23,10 +22,6 @@ public class EnchantPool {
      * 一層目の項目をMapに入れる
      */
     private void yamlLoadDefinitions(YamlManager config) {
-        Bukkit.getLogger().info("yamlLoadDefinitions fire");
-        Bukkit.getLogger().info(
-                config.getConfig().getKeys(false).toString()
-        );
         ConfigurationSection section = config.getConfig().getConfigurationSection("enchants"); //enchants.ymlのenchants部分を読み込み
         if (section == null){
             return;
@@ -46,10 +41,6 @@ public class EnchantPool {
      *entriesListに項目をforで追加。扱う場合は(id,weight)
      */
     private void yamlLoadEntries(YamlManager config) {
-        Bukkit.getLogger().info("yamlLoadEntries fire");
-        Bukkit.getLogger().info(
-                config.getConfig().getKeys(false).toString()
-        );
         ConfigurationSection pool = config.getConfig().getConfigurationSection("enchant-pool"); //第一層
         ConfigurationSection section = pool.getConfigurationSection("entries"); //第二層
         if (section == null){
