@@ -1,5 +1,8 @@
 enchant-pool:
   entries:
+    delicate:
+      weight: 1
+
     #tools
     efficiency:
       weight: 10
@@ -103,7 +106,6 @@ enchant-pool:
     #all
     unbreaking:
       weight: 6
-
 
 
 

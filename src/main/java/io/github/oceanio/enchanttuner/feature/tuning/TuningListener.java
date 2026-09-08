@@ -1,7 +1,9 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
+import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -24,15 +26,21 @@ public class TuningListener implements Listener {
 
     private final JavaPlugin plugin;
     private final TuningService service;
+    private final Map<NamespacedKey, CustomEnchant> customEnchants;
     private static final Set<Integer> CLICKABLE_SLOT = Set.of(20,23,25);
     private static final int TARGET_SLOT = 20;
     private static final int COST_SLOT = 23;
     private static final int CONFIRM_SLOT = 25;
 
-
     public TuningListener(JavaPlugin plugin, TuningService service) {
+        this(plugin, service, Map.of());
+    }
+
+    public TuningListener(JavaPlugin plugin, TuningService service,
+                          Map<NamespacedKey, CustomEnchant> customEnchants) {
         this.plugin = plugin;
         this.service = service;
+        this.customEnchants = Map.copyOf(customEnchants);
     }
 
     @EventHandler
@@ -113,7 +121,11 @@ public class TuningListener implements Listener {
                         }
 
                     } else if (definition.getType() == EnchantDefinition.EnchantType.CUSTOM) {
-                        // Custom enchantmentの付与処理
+                        CustomEnchant customEnchant = customEnchants.get(definition.getKey());
+
+                        if (customEnchant != null) {
+                            customEnchant.apply(result, level);
+                        }
 
                     }
 

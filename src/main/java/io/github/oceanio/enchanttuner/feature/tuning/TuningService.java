@@ -1,5 +1,6 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
+import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -22,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TuningService {
 
     private final EnchantPool pool;
+    private final Map<NamespacedKey, CustomEnchant> customEnchants;
 
     private final NamespacedKey appliedEnchantsKey;
 
@@ -31,7 +33,13 @@ public class TuningService {
     private static final int[] FLESH_COST = {1, 2, 5, 10, 20};
 
     public TuningService(EnchantPool pool, JavaPlugin plugin) {
+        this(pool, plugin, Map.of());
+    }
+
+    public TuningService(EnchantPool pool, JavaPlugin plugin,
+                         Map<NamespacedKey, CustomEnchant> customEnchants) {
         this.pool = pool;
+        this.customEnchants = Map.copyOf(customEnchants);
         this.appliedEnchantsKey = new NamespacedKey(plugin, "applied_enchants");
     }
 
@@ -64,6 +72,8 @@ public class TuningService {
                 pool.getEntries().stream().map(entry -> {return pool.getDefinition(entry.getEnchantId());})
                         .filter(Objects::nonNull)
                         .filter(EnchantDefinition::isEnabled)
+                        .filter(def -> def.getType() != EnchantDefinition.EnchantType.CUSTOM
+                                || customEnchants.containsKey(def.getKey()))
                         .filter(def -> def.getTargets().stream().anyMatch(target -> TargetMatcher.canEnchant(target,item)))
                         .filter(def -> ConflictChecker.canEnchant(def.getConflicts(),pdc,appliedEnchantsKey))
                         .filter(def -> !hasBeenApplied(pdc, def.getKey()))
