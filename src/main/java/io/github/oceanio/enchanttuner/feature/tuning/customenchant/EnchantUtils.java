@@ -59,7 +59,6 @@ public final class EnchantUtils {
         if (lore == null) {
             lore = new ArrayList<>();
         }
-        Bukkit.getLogger().info(definition.getDisplayName());
         lore.add(
                 Component.text(
                                 definition.getDisplayName()
