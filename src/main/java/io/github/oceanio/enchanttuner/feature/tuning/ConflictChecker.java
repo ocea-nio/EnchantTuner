@@ -15,7 +15,6 @@ public class ConflictChecker {
         if (applied == null){
             return true;
         }
-        Bukkit.getLogger().info(applied);
         List<String> conflicts = npc.stream().map(NamespacedKey::toString).toList();
         return  Collections.disjoint(List.of(applied.split(",")), conflicts);
 
