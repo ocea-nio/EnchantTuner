@@ -1,6 +1,7 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
 import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
+import io.github.oceanio.enchanttuner.feature.tuning.customenchant.EnchantUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -130,6 +131,9 @@ public class TuningListener implements Listener {
                     }
 
                     service.markAsApplied(result, definition);
+                    if (definition.getType() == EnchantDefinition.EnchantType.CUSTOM) {
+                        EnchantUtils.updateLore(result, definition, level);
+                    }
                 });
                 service.consumeIngredients(inv, required,COST_SLOT);
 

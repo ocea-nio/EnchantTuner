@@ -80,7 +80,8 @@ public class EnchantPool {
                         .filter(Objects::nonNull)
                         .toList();
 
-        return new EnchantDefinition(id, type, key, enabled, maxLevel, targets, conflicts);
+        String displayName = section.getString("display-name","");
+        return new EnchantDefinition(id, type, key, enabled, maxLevel, targets, conflicts, displayName);
     }
 
     public EnchantDefinition getDefinition(String id) {

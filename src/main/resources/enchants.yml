@@ -17,6 +17,7 @@ enchants:
     type: custom
     key: enchanttuner:delicate
     enable: true
+    display-name: 繊細
     max-level: 1
     target:
       - hoe

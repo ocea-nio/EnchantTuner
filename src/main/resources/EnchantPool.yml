@@ -1,7 +1,5 @@
 enchant-pool:
   entries:
-    delicate:
-      weight: 1
 
     #tools
     efficiency:
@@ -14,6 +12,8 @@ enchant-pool:
       weight: 10
     luck_of_the_sea:
       weight: 5
+    delicate:
+      weight: 1
 
     #sword
     sharpness:

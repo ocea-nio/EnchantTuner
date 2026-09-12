@@ -2,9 +2,6 @@ package io.github.oceanio.enchanttuner.feature.tuning.customenchant.delicate;
 
 import io.github.oceanio.enchanttuner.feature.tuning.TuningKeys;
 import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
@@ -17,8 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class DelicateListener implements Listener, CustomEnchant {
     @Override
@@ -35,8 +31,6 @@ public class DelicateListener implements Listener, CustomEnchant {
         );
 
         item.setItemMeta(meta);
-
-        updateLore(item);
     }
     @EventHandler
     public void onBreak(BlockBreakEvent event){
@@ -57,34 +51,6 @@ public class DelicateListener implements Listener, CustomEnchant {
                 event.setCancelled(true);
             }
         }
-    }
-
-    private void updateLore(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return;
-
-        PersistentDataContainer pdc = meta.getPersistentDataContainer();
-
-        Integer level = pdc.get(
-                TuningKeys.DELICATE,
-                PersistentDataType.INTEGER
-        );
-
-        if (level == null) {
-            return;
-        }
-
-        List<Component> lore = meta.lore();
-
-        if (lore == null) {
-            lore = new ArrayList<>();
-        }
-
-        lore.add(Component.text("繊細 " + level).color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false));
-
-        meta.lore(lore);
-        item.setItemMeta(meta);
     }
 
     private boolean hasDelicate(ItemStack item) {

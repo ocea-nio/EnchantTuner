@@ -17,8 +17,9 @@ public class EnchantDefinition {
     private final int maxLevel;
     private final List<String> targets;
     private final List<NamespacedKey> conflicts;
+    private final String displayName;
 
-    public EnchantDefinition(String id, EnchantType type, NamespacedKey key, boolean enabled, int maxLevel, List<String> targets, List<NamespacedKey> conflicts) {
+    public EnchantDefinition(String id, EnchantType type, NamespacedKey key, boolean enabled, int maxLevel, List<String> targets, List<NamespacedKey> conflicts, String displayName) {
         this.id = id;
         this.type = type;
         this.key = key;
@@ -26,13 +27,38 @@ public class EnchantDefinition {
         this.maxLevel = maxLevel;
         this.targets = List.copyOf(targets);
         this.conflicts = List.copyOf(conflicts);
+        this.displayName = displayName;
     }
 
-    public String getId() { return id; }
-    public EnchantType getType() { return type; }
-    public NamespacedKey getKey() { return key; }
-    public boolean isEnabled() { return enabled; }
-    public int getMaxLevel() { return maxLevel; }
-    public List<String> getTargets() { return targets; }
-    public List<NamespacedKey> getConflicts() { return conflicts; }
+    public String getId() {
+        return id;
+    }
+
+    public EnchantType getType() {
+        return type;
+    }
+
+    public NamespacedKey getKey() {
+        return key;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public int getMaxLevel() {
+        return maxLevel;
+    }
+
+    public List<String> getTargets() {
+        return targets;
+    }
+
+    public List<NamespacedKey> getConflicts() {
+        return conflicts;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }
