@@ -39,7 +39,7 @@ public class DelicateListener implements Listener, CustomEnchant {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         // Delicateが付いているか確認
-        if (!hasDelicate(item)) {
+        if (!hasTuning(item)) {
             return;
         }
         Block block = event.getBlock();
@@ -53,7 +53,8 @@ public class DelicateListener implements Listener, CustomEnchant {
         }
     }
 
-    private boolean hasDelicate(ItemStack item) {
+    @Override
+    public boolean hasTuning(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return false;
 

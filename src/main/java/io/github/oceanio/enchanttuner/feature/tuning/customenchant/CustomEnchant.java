@@ -4,4 +4,5 @@ import org.bukkit.inventory.ItemStack;
 
 public interface CustomEnchant {
     void apply(ItemStack item, int level);
+    boolean hasTuning(ItemStack item);
 }

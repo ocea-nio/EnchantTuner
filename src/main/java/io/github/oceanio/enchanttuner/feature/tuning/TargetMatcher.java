@@ -1,6 +1,9 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Objects;
 
 public class TargetMatcher {
     public static boolean canEnchant(String target, ItemStack item) {
@@ -57,6 +60,9 @@ public class TargetMatcher {
             }
             case "shield" -> {
                 if (material.endsWith("SHIELD")) return true;
+            }
+            case "leather_helmet" -> {
+                if (Material.LEATHER_HELMET.equals(item.getType())) return true;
             }
         }
         return false;

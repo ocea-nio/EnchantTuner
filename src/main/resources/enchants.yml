@@ -395,4 +395,12 @@ enchants:
       - trident
       - shears
 
+  durability:
+    type: custom
+    key: enchanttuner:durability
+    enable: true
+    max-level: 4
+    target:
+      - leather_helmet
+
 

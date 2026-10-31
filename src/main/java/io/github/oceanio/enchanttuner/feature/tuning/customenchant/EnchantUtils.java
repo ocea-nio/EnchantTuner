@@ -2,19 +2,13 @@ package io.github.oceanio.enchanttuner.feature.tuning.customenchant;
 
 
 import io.github.oceanio.enchanttuner.feature.tuning.EnchantDefinition;
-import io.github.oceanio.enchanttuner.feature.tuning.TuningKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public final class EnchantUtils {
