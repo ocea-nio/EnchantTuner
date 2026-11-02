@@ -4,7 +4,9 @@ import io.github.oceanio.enchanttuner.core.Feature;
 import io.github.oceanio.enchanttuner.core.YamlManager;
 import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
 import io.github.oceanio.enchanttuner.feature.tuning.customenchant.delicate.DelicateListener;
-import io.github.oceanio.enchanttuner.feature.tuning.customenchant.durability.DurabilityListener;
+import io.github.oceanio.enchanttuner.feature.tuning.customenchant.durability.DurabilityService;
+import io.github.oceanio.enchanttuner.feature.tuning.customenchant.fluidHeal.FluidHealListener;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +19,8 @@ public class TuningFeature implements Feature {
 
     //Enchant
     private DelicateListener delicate;
-    private DurabilityListener durability;
+    private DurabilityService durability;
+    private FluidHealListener fluidHeal;
 
     //Yaml
     private YamlManager enchantPool;
@@ -43,10 +46,12 @@ public class TuningFeature implements Feature {
 
         //==+==Enchant Register==+==
         this.delicate = new DelicateListener();
-        this.durability = new DurabilityListener();
+        this.durability = new DurabilityService();
+        this.fluidHeal = new FluidHealListener(plugin);
         Map<NamespacedKey, CustomEnchant> customEnchants = Map.ofEntries(
                 Map.entry(new NamespacedKey(plugin, "delicate"), delicate),
-                Map.entry(new NamespacedKey(plugin, "durability"), durability)
+                Map.entry(new NamespacedKey(plugin, "durability"), durability),
+                Map.entry(new NamespacedKey(plugin, "fluid_heal"), fluidHeal)
         );
 
         //service
@@ -56,6 +61,10 @@ public class TuningFeature implements Feature {
         //register
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
         plugin.getServer().getPluginManager().registerEvents(delicate, plugin);
+        plugin.getServer().getPluginManager().registerEvents(fluidHeal, plugin);
+        Bukkit.getLogger().info(
+                "FluidHeal instance: " + fluidHeal
+        );
     }
 
     @Override
@@ -65,6 +74,9 @@ public class TuningFeature implements Feature {
         }
         if (delicate != null) {
             HandlerList.unregisterAll(delicate);
+        }
+        if (fluidHeal != null) {
+            HandlerList.unregisterAll(fluidHeal);
         }
     }
 }

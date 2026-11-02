@@ -1,6 +1,7 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
 import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -13,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 import static io.github.oceanio.enchanttuner.feature.tuning.customenchant.EnchantUtils.updateLore;
 
@@ -82,6 +84,8 @@ public class TuningService {
         if (candidates.isEmpty()) {
             return result;
         }
+
+        Bukkit.getLogger().info("Entry:"+candidates.stream().map(EnchantDefinition::getKey).toList());
 
         EnchantDefinition definition =
                 candidates.get(

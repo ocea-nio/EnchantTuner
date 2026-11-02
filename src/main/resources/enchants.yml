@@ -103,6 +103,15 @@ enchants:
     target:
       - sword
       - spear
+    conflicts:
+      - enchanttuner:fluid_heal
+  fluid_heal:
+    type: custom
+    key: enchanttuner:fluid_heal
+    enable: true
+    max-level: 2
+    target:
+      - sword
   sweeping_edge:
     type: vanilla
     key: minecraft:sweeping_edge
@@ -110,6 +119,8 @@ enchants:
     max-level: 3
     target:
       - sword
+    conflicts:
+      - minecraft:fire_aspect
   knockback:
     type: vanilla
     key: minecraft:knockback
@@ -400,6 +411,7 @@ enchants:
     key: enchanttuner:durability
     enable: true
     max-level: 4
+    display-name: 最大耐久値増加
     target:
       - leather_helmet
 

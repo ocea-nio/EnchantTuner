@@ -24,6 +24,8 @@ enchant-pool:
       weight: 5
     fire_aspect:
       weight: 3
+    fluid_heal:
+      weight: 3
     sweeping_edge:
       weight: 1
     knockback:
@@ -106,6 +108,8 @@ enchant-pool:
     #all
     unbreaking:
       weight: 6
+    durability:
+      weight: 3
 
 
 
