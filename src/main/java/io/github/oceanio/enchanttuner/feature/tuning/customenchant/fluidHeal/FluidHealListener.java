@@ -6,8 +6,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class FluidHealListener implements Listener, CustomEnchant {
+public class FluidHealListener implements CustomEnchant {
     private final JavaPlugin plugin;
 
     public FluidHealListener(JavaPlugin plugin) {
@@ -51,8 +50,16 @@ public class FluidHealListener implements Listener, CustomEnchant {
         );
     }
 
-    @EventHandler
-    public void onKilled(EntityDeathEvent event){
+    @Override
+    public void onTrigger(ItemStack configuredItem, int level, Event triggerEvent, java.util.Map<String, Object> args) {
+        if (triggerEvent instanceof EntityDamageByEntityEvent attack) {
+            playAttackEffect(attack);
+        } else if (triggerEvent instanceof EntityDeathEvent death) {
+            onKilled(death, level, args);
+        }
+    }
+
+    private void onKilled(EntityDeathEvent event, int enchantLevel, java.util.Map<String, Object> args){
         LivingEntity victim = event.getEntity();
 
         Player player = victim.getKiller();
@@ -62,31 +69,21 @@ public class FluidHealListener implements Listener, CustomEnchant {
 
         if (!hasTuning(weapon)) return;
 
-        ItemMeta meta = weapon.getItemMeta();
-        if (meta == null) return;
-
-        int enchantLevel = meta.getPersistentDataContainer().getOrDefault(
-                TuningKeys.FLUIDHEAL,
-                PersistentDataType.INTEGER,
-                0
-        );
-
         if (enchantLevel < 1) return;
 
         healParticle(victim,player);
 
+        int durationSeconds = integerArg(args, "duration-seconds", 5);
+        int amplifier = integerArg(args, "amplifier", enchantLevel - 1, enchantLevel);
         player.addPotionEffect(new PotionEffect(
                 PotionEffectType.ABSORPTION,
-                20 * 5,
-                enchantLevel - 1
+                20 * Math.max(1, durationSeconds),
+                Math.max(0, amplifier)
         ));
     }
 
-    @EventHandler
-    public void onAttack(EntityDamageByEntityEvent event){
+    private void playAttackEffect(EntityDamageByEntityEvent event){
         if (!(event.getDamager() instanceof Player player)) return;
-        ItemStack weapon = player.getInventory().getItemInMainHand();
-        if (!hasTuning(weapon))return;
         Entity victim = event.getEntity();
 
         World world = victim.getWorld();
@@ -161,5 +158,25 @@ public class FluidHealListener implements Listener, CustomEnchant {
                 tick++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    private int integerArg(java.util.Map<String, Object> args, String key, int fallback) {
+        return integerArg(args, key, fallback, fallback + 1);
+    }
+
+    private int integerArg(java.util.Map<String, Object> args, String key, int fallback, int level) {
+        Object value = args.get(key);
+        if (value instanceof Number number) return number.intValue();
+        if (!(value instanceof String expression)) return fallback;
+        String normalized = expression.replace("%level%", Integer.toString(level)).replace(" ", "");
+        try {
+            int minus = normalized.indexOf('-', 1);
+            if (minus > 0) return Integer.parseInt(normalized.substring(0, minus)) - Integer.parseInt(normalized.substring(minus + 1));
+            int plus = normalized.indexOf('+', 1);
+            if (plus > 0) return Integer.parseInt(normalized.substring(0, plus)) + Integer.parseInt(normalized.substring(plus + 1));
+            return Integer.parseInt(normalized);
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
     }
 }

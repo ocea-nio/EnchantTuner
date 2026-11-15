@@ -21,6 +21,12 @@ enchants:
     max-level: 1
     target:
       - hoe
+    effects:
+      - id: delicate_unripe_block
+        args:
+          cancel-unripe: true
+        triggers:
+          - block_break
   fortune:
     type: vanilla
     key: minecraft:fortune
@@ -112,6 +118,16 @@ enchants:
     max-level: 2
     target:
       - sword
+    effects:
+      - id: fluid_heal_attack
+        triggers:
+          - melee_attack
+      - id: fluid_heal_kill
+        args:
+          duration-seconds: 5
+          amplifier: "%level% - 1"
+        triggers:
+          - entity_kill
   sweeping_edge:
     type: vanilla
     key: minecraft:sweeping_edge
@@ -414,5 +430,9 @@ enchants:
     display-name: 最大耐久値増加
     target:
       - leather_helmet
+    effects:
+      - id: durability_bonus
+        args:
+          bonus-per-level: 50
 
 

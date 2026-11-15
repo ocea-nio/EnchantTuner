@@ -28,6 +28,7 @@ public class TuningListener implements Listener {
     private final JavaPlugin plugin;
     private final TuningService service;
     private final Map<NamespacedKey, CustomEnchant> customEnchants;
+    private final Map<String, CustomEnchant> effectHandlers;
     private static final Set<Integer> CLICKABLE_SLOT = Set.of(20,23,25);
     private static final int TARGET_SLOT = 20;
     private static final int COST_SLOT = 23;
@@ -39,9 +40,16 @@ public class TuningListener implements Listener {
 
     public TuningListener(JavaPlugin plugin, TuningService service,
                           Map<NamespacedKey, CustomEnchant> customEnchants) {
+        this(plugin, service, customEnchants, Map.of());
+    }
+
+    public TuningListener(JavaPlugin plugin, TuningService service,
+                          Map<NamespacedKey, CustomEnchant> customEnchants,
+                          Map<String, CustomEnchant> effectHandlers) {
         this.plugin = plugin;
         this.service = service;
         this.customEnchants = Map.copyOf(customEnchants);
+        this.effectHandlers = Map.copyOf(effectHandlers);
     }
 
     @EventHandler
@@ -122,15 +130,22 @@ public class TuningListener implements Listener {
                         }
 
                     } else if (definition.getType() == EnchantDefinition.EnchantType.CUSTOM) {
-                        CustomEnchant customEnchant = customEnchants.get(definition.getKey());
-
-                        if (customEnchant != null) {
-                            customEnchant.apply(result, level);
+                        if (!definition.getEffects().isEmpty()) {
+                            java.util.Set<CustomEnchant> applied = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+                            for (EffectDefinition effect : definition.getEffects()) {
+                                CustomEnchant handler = effectHandlers.get(effect.id());
+                                if (handler != null && applied.add(handler)) {
+                                    handler.apply(result, level, effect.args());
+                                }
+                            }
+                        } else {
+                            CustomEnchant customEnchant = customEnchants.get(definition.getKey());
+                            if (customEnchant != null) customEnchant.apply(result, level);
                         }
 
                     }
 
-                    service.markAsApplied(result, definition);
+                    service.markAsApplied(result, definition, level);
                     if (definition.getType() == EnchantDefinition.EnchantType.CUSTOM) {
                         EnchantUtils.updateLore(result, definition, level);
                     }

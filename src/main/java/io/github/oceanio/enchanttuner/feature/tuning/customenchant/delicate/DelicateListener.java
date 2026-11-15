@@ -5,9 +5,7 @@ import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,7 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 
 
-public class DelicateListener implements Listener, CustomEnchant {
+public class DelicateListener implements CustomEnchant {
     @Override
     public void apply(ItemStack item, int level) {
         ItemMeta meta = item.getItemMeta();
@@ -32,19 +30,13 @@ public class DelicateListener implements Listener, CustomEnchant {
 
         item.setItemMeta(meta);
     }
-    @EventHandler
-    public void onBreak(BlockBreakEvent event){
-        Player player = event.getPlayer();
-
-        ItemStack item = player.getInventory().getItemInMainHand();
-
-        // Delicateが付いているか確認
-        if (!hasTuning(item)) {
-            return;
-        }
+    @Override
+    public void onTrigger(ItemStack item, int level, Event triggerEvent, java.util.Map<String, Object> args) {
+        if (!(triggerEvent instanceof BlockBreakEvent event)) return;
         Block block = event.getBlock();
         BlockData data = block.getBlockData();
-        if (data instanceof Ageable ageable){
+        boolean cancelUnripe = !Boolean.FALSE.equals(args.get("cancel-unripe"));
+        if (cancelUnripe && data instanceof Ageable ageable){
             int age = ageable.getAge();
             int maxAge = ageable.getMaximumAge();
             if (age < maxAge) {

@@ -18,8 +18,9 @@ public class EnchantDefinition {
     private final List<String> targets;
     private final List<NamespacedKey> conflicts;
     private final String displayName;
+    private final List<EffectDefinition> effects;
 
-    public EnchantDefinition(String id, EnchantType type, NamespacedKey key, boolean enabled, int maxLevel, List<String> targets, List<NamespacedKey> conflicts, String displayName) {
+    public EnchantDefinition(String id, EnchantType type, NamespacedKey key, boolean enabled, int maxLevel, List<String> targets, List<NamespacedKey> conflicts, String displayName, List<EffectDefinition> effects) {
         this.id = id;
         this.type = type;
         this.key = key;
@@ -28,6 +29,7 @@ public class EnchantDefinition {
         this.targets = List.copyOf(targets);
         this.conflicts = List.copyOf(conflicts);
         this.displayName = displayName;
+        this.effects = List.copyOf(effects);
     }
 
     public String getId() {
@@ -60,5 +62,9 @@ public class EnchantDefinition {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public List<EffectDefinition> getEffects() {
+        return effects;
     }
 }

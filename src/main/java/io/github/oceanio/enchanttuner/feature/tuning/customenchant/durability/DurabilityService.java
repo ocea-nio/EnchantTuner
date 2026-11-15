@@ -8,11 +8,17 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import java.util.Map;
 
 
 public class DurabilityService implements CustomEnchant {
     @Override
     public void apply(ItemStack item, int level) {
+        apply(item, level, Map.of());
+    }
+
+    @Override
+    public void apply(ItemStack item, int level, Map<String, Object> args) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
@@ -22,7 +28,7 @@ public class DurabilityService implements CustomEnchant {
                 level
         );
         Bukkit.getLogger().info("fired1");
-        OverrideDurability(item,meta, level, pdc);
+        OverrideDurability(item,meta, level, pdc, args);
         Bukkit.getLogger().info("fired3");
         item.setItemMeta(meta);
     }
@@ -38,7 +44,7 @@ public class DurabilityService implements CustomEnchant {
         );
     }
 
-    private void OverrideDurability(ItemStack item,ItemMeta meta, int level,PersistentDataContainer pdc) {
+    private void OverrideDurability(ItemStack item,ItemMeta meta, int level,PersistentDataContainer pdc, Map<String, Object> args) {
         Bukkit.getLogger().info("fired2");
         if (!(meta instanceof Damageable damageable)) return;
         int currentMax = damageable.hasMaxDamage()
@@ -59,11 +65,20 @@ public class DurabilityService implements CustomEnchant {
                 defaultDura
         );
 
-        int bonus = meta.hasEquippable() ? 50 : 75;
+        int bonus = integerArg(args, "bonus-per-level", meta.hasEquippable() ? 50 : 75);
         int prepare = defaultDura + bonus * level;
 
         damageable.setMaxDamage(prepare);
             Bukkit.getLogger().info("default:"+defaultDura+",prepare:"+prepare+"result:"+damageable.getMaxDamage());
 
+    }
+
+    private int integerArg(Map<String, Object> args, String key, int fallback) {
+        Object value = args.get(key);
+        if (value instanceof Number number) return number.intValue();
+        if (value instanceof String text) {
+            try { return Integer.parseInt(text); } catch (NumberFormatException ignored) { }
+        }
+        return fallback;
     }
 }
