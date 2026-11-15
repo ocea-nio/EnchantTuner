@@ -1,7 +1,6 @@
-package io.github.oceanio.enchanttuner.feature.tuning.customenchant.fluidHeal;
+package io.github.oceanio.enchanttuner.feature.tuning.customEnchant.fluidHeal;
 
 import io.github.oceanio.enchanttuner.feature.tuning.TuningKeys;
-import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

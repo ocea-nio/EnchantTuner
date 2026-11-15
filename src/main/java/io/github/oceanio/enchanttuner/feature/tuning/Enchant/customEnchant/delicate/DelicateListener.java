@@ -1,7 +1,6 @@
-package io.github.oceanio.enchanttuner.feature.tuning.customenchant.delicate;
+package io.github.oceanio.enchanttuner.feature.tuning.customEnchant.delicate;
 
 import io.github.oceanio.enchanttuner.feature.tuning.TuningKeys;
-import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;

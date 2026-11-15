@@ -1,7 +1,6 @@
-package io.github.oceanio.enchanttuner.feature.tuning.customenchant.durability;
+package io.github.oceanio.enchanttuner.feature.tuning.customEnchant.durability;
 
 import io.github.oceanio.enchanttuner.feature.tuning.TuningKeys;
-import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;

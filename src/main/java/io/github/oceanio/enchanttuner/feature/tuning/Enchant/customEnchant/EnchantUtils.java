@@ -1,4 +1,4 @@
-package io.github.oceanio.enchanttuner.feature.tuning.customenchant;
+package io.github.oceanio.enchanttuner.feature.tuning.customEnchant;
 
 
 import io.github.oceanio.enchanttuner.feature.tuning.EnchantDefinition;
