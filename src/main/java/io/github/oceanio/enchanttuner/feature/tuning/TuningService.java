@@ -1,6 +1,7 @@
 package io.github.oceanio.enchanttuner.feature.tuning;
 
 import io.github.oceanio.enchanttuner.feature.tuning.customenchant.CustomEnchant;
+import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 
 import static io.github.oceanio.enchanttuner.feature.tuning.customenchant.EnchantUtils.updateLore;
 
@@ -26,6 +26,7 @@ public class TuningService {
 
     private final EnchantPool pool;
     private final Map<NamespacedKey, CustomEnchant> customEnchants;
+    private final Map<String, CustomEnchant> effectHandlers;
 
     private final NamespacedKey appliedEnchantsKey;
 
@@ -35,14 +36,58 @@ public class TuningService {
     private static final int[] FLESH_COST = {1, 2, 5, 10, 20};
 
     public TuningService(EnchantPool pool, JavaPlugin plugin) {
-        this(pool, plugin, Map.of());
+        this(pool, plugin, Map.of(), Map.of());
     }
 
     public TuningService(EnchantPool pool, JavaPlugin plugin,
                          Map<NamespacedKey, CustomEnchant> customEnchants) {
+        this(pool, plugin, customEnchants, Map.of());
+    }
+
+    public TuningService(EnchantPool pool, JavaPlugin plugin,
+                         Map<NamespacedKey, CustomEnchant> customEnchants,
+                         Map<String, CustomEnchant> effectHandlers) {
         this.pool = pool;
         this.customEnchants = Map.copyOf(customEnchants);
+        this.effectHandlers = Map.copyOf(effectHandlers);
         this.appliedEnchantsKey = new NamespacedKey(plugin, "applied_enchants");
+    }
+
+    /** Execute all configured effects for the supplied trigger and item. */
+    public void dispatchEffects(ItemStack item, EffectTrigger trigger, Event event) {
+        if (item == null || item.getType().isAir()) return;
+        for (EnchantDefinition definition : pool.getDefinitions()) {
+            if (definition.getType() != EnchantDefinition.EnchantType.CUSTOM
+                    || !definition.isEnabled()) continue;
+            int level = getAppliedLevel(item, definition);
+            if (level < 1) continue;
+            for (EffectDefinition effect : definition.getEffects()) {
+                if (!effect.triggers().contains(trigger)) continue;
+                CustomEnchant handler = effectHandlers.get(effect.id());
+                if (handler == null) {
+                    Bukkit.getLogger().warning("Unknown effect id '" + effect.id() + "' in enchant '" + definition.getId() + "'");
+                    continue;
+                }
+                handler.onTrigger(item, level, event, effect.args());
+            }
+        }
+    }
+
+    private int getAppliedLevel(ItemStack item, EnchantDefinition definition) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return 0;
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        int level = pdc.getOrDefault(definition.getKey(), PersistentDataType.INTEGER, 0);
+        // Old items store custom effect levels under their built-in effect key.
+        if (level < 1 && hasBeenApplied(pdc, definition.getKey())) {
+            CustomEnchant legacy = customEnchants.get(definition.getKey());
+            if (legacy != null && legacy.hasTuning(item)) return 1;
+            for (EffectDefinition effect : definition.getEffects()) {
+                CustomEnchant handler = effectHandlers.get(effect.id());
+                if (handler != null && handler.hasTuning(item)) return 1;
+            }
+        }
+        return level;
     }
 
     /**
@@ -68,15 +113,19 @@ public class TuningService {
             return result;
         }
         //lambda
-        List<EnchantDefinition> candidates =
-                pool.getEntries().stream().map(entry -> {return pool.getDefinition(entry.getEnchantId());})
-                        .filter(Objects::nonNull)
-                        .filter(EnchantDefinition::isEnabled)
-                        .filter(def -> def.getType() != EnchantDefinition.EnchantType.CUSTOM
-                                || customEnchants.containsKey(def.getKey()))
-                        .filter(def -> def.getTargets().stream().anyMatch(target -> TargetMatcher.canEnchant(target,item)))
-                        .filter(def -> ConflictChecker.canEnchant(def.getConflicts(),pdc,appliedEnchantsKey))
-                        .filter(def -> !hasBeenApplied(pdc, def.getKey()))
+        List<EnchantPoolEntry> candidates =
+                pool.getEntries().stream()
+                        .filter(entry -> entry.getWeight() > 0)
+                        .filter(entry -> {
+                            EnchantDefinition def = pool.getDefinition(entry.getEnchantId());
+                            return def != null && def.isEnabled()
+                                    && (def.getType() != EnchantDefinition.EnchantType.CUSTOM
+                                    || !def.getEffects().isEmpty() && def.getEffects().stream().allMatch(effectHandlers::containsKey)
+                                    || customEnchants.containsKey(def.getKey()))
+                                    && def.getTargets().stream().anyMatch(target -> TargetMatcher.canEnchant(target, item))
+                                    && ConflictChecker.canEnchant(def.getConflicts(), pdc, appliedEnchantsKey)
+                                    && !hasBeenApplied(pdc, def.getKey());
+                        })
                         .toList();
 
 
@@ -85,12 +134,17 @@ public class TuningService {
             return result;
         }
 
-        Bukkit.getLogger().info("Entry:"+candidates.stream().map(EnchantDefinition::getKey).toList());
-
-        EnchantDefinition definition =
-                candidates.get(
-                        (int) (Math.random() * candidates.size())
-                );
+        long totalWeight = candidates.stream().mapToLong(EnchantPoolEntry::getWeight).sum();
+        long roll = ThreadLocalRandom.current().nextLong(totalWeight);
+        EnchantPoolEntry selected = candidates.getLast();
+        for (EnchantPoolEntry candidate : candidates) {
+            roll -= candidate.getWeight();
+            if (roll < 0) {
+                selected = candidate;
+                break;
+            }
+        }
+        EnchantDefinition definition = pool.getDefinition(selected.getEnchantId());
 
         int level =
                 rollLevel(definition.getMaxLevel());
@@ -177,6 +231,11 @@ public class TuningService {
         for (NamespacedKey key : customEnchants.keySet()) {
             pdc.remove(key);
         }
+        for (EnchantDefinition definition : pool.getDefinitions()) {
+            if (definition.getType() == EnchantDefinition.EnchantType.CUSTOM) {
+                pdc.remove(definition.getKey());
+            }
+        }
         // 厳選システム側の記録
         pdc.remove(appliedEnchantsKey);
 
@@ -225,7 +284,8 @@ public class TuningService {
      */
     public void markAsApplied(
             ItemStack item,
-            EnchantDefinition enchantment
+            EnchantDefinition enchantment,
+            int level
     ) {
 
         ItemMeta meta =
@@ -237,6 +297,10 @@ public class TuningService {
 
         PersistentDataContainer pdc =
                 meta.getPersistentDataContainer();
+
+        if (enchantment.getType() == EnchantDefinition.EnchantType.CUSTOM) {
+            pdc.set(enchantment.getKey(), PersistentDataType.INTEGER, level);
+        }
 
         String current =
                 pdc.get(
